@@ -3,27 +3,6 @@
 import PySimpleGUI as sg
 import string
 import analysis
-import matplotlib; matplotlib.use("TkAgg")
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasAgg
-import matplotlib.backends.tkagg as tkagg
-import tkinter as Tk
-
-#taken from https://github.com/MikeTheWatchGuy/PySimpleGUI/blob/master/DemoPrograms/Demo_Matplotlib.py
-def draw_figure(canvas, figure, loc=(0, 0)):
-    """ Draw a matplotlib figure onto a Tk canvas
-    loc: location of top-left corner of figure on canvas in pixels.
-    Inspired by matplotlib source: lib/matplotlib/backends/backend_tkagg.py
-    """
-    figure_canvas_agg = FigureCanvasAgg(figure)
-    figure_canvas_agg.draw()
-    figure_x, figure_y, figure_w, figure_h = figure.bbox.bounds
-    figure_w, figure_h = int(figure_w), int(figure_h)
-    photo = Tk.PhotoImage(master=canvas, width=figure_w, height=figure_h)
-    canvas.create_image(loc[0] + figure_w/2, loc[1] + figure_h/2, image=photo)
-    tkagg.blit(photo, figure_canvas_agg.get_renderer()._renderer, colormode=2)
-    return photo
-
 
 translation_dict = dict()   # Dictionary to translate numbers to letters for plate layout
 for number, letter in enumerate(string.ascii_lowercase):
@@ -50,40 +29,15 @@ for row in range(8):
         identity = translation_dict[row]+str(col+1)
         button_grid[row+1].append(sg.Checkbox(text=identity, font='Fixedsys', key=identity, default=True))
 
-graph = [[sg.Canvas(size=(300, 300), key='canvas')]]
+tab1_layout = [*header, *input_fields, *button_grid]
+tab2_layout = [[]]  # TODO: Write documentation
+tab3_layout = [[]]  # TODO: include references to necessary literature and dependencies
 
-plate_layout_pic = [sg.Graph(canvas_size=(700, 700),
-                             graph_bottom_left=(0, 450),
-                             graph_top_right=(450, 0),
-                             key='_GRAPH_')]
+full_layout = [[sg.TabGroup([[sg.Tab('Analysis', tab1_layout),
+                              sg.Tab('Documentation', tab2_layout),
+                              sg.Tab('References', tab3_layout)]])]]
 
-
-layout = [
-            *header,
-            *input_fields,
-            *button_grid,
-            *graph
-            #plate_layout_pic,
-         ]
-
-window = sg.Window(title='Plateau').Layout(layout)
-
-# g = window.FindElement('_GRAPH_')
-# BOX_SIZE = 20
-# for row in range(8):
-#     for col in range(12):
-#         if row is 0 or row is 7 or col is 0 or col is 11:
-#             fill = 'grey'
-#         else:
-#             fill = None
-#         g.DrawRectangle(top_left=(col * BOX_SIZE + 5, row * BOX_SIZE + 3),
-#                         bottom_right=(col * BOX_SIZE + BOX_SIZE + 5, row * BOX_SIZE + BOX_SIZE + 3),
-#                         line_color='black',
-#                         fill_color=fill)
-#
-#         g.DrawText(text=translation_dict[row]+str(col+1),
-#                    location=(col * BOX_SIZE + 15, row * BOX_SIZE + 8))
-
+window = sg.Window(title='Plateau').Layout(full_layout)
 
 while True:  # Event Loop
     event, values = window.Read()
@@ -97,5 +51,4 @@ while True:  # Event Loop
                                results_file=values['results_file'],
                                gui_value_dict=values)
         figure.show(block=False)
-        #fig_photo = draw_figure(window.FindElement('canvas').TKCanvas, figure) #TODO: fix this.
 window.Close()
