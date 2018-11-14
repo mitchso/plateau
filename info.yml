@@ -1,0 +1,41 @@
+#
+# This file contains style specifications for visualization using Mitch's python script.
+#
+
+# If editing, please keep all variable names in lowercase. Thanks :)
+
+author: Mitch Syberg-Olsen
+
+# Colour to use when plotting the results
+colours:
+  tdm1: '#f48042'
+
+  1942_pep6_mmae_dar_2: '#91c1db'
+  1942_pep6_mmae_dar_3: '#6e9ab1'
+  1942_pep6_mmae_dar_8: '#31444f'
+
+  1942_mmae_dar_2: '#91c1db'
+  1942_mmae_dar_3: '#6e9ab1'
+  1942_mmae_dar_8: '#31444f'
+
+  1942_pep6_tax.1: '#a45d8c'
+  1942_pep6_tax.2: '#8e356f'
+  1942_pep6_tax.3: '#54153e'
+
+  1942_tax.1: '#a45d8c'
+  1942_tax.2: '#8e356f'
+  1942_tax.3: '#54153e'
+
+  1942_mmae_dar_8_2640: '#a0ecd0'
+  
+  1942_mmae_dar_8_2641: '#a9927d'
+
+citations:
+  error_bars: 
+    1: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2064100/
+    2: https://www.asbmb.org/uploadedFiles/ASBMBToday/_Files/Documents/asbmb-HeyResearcher-14.pdf
+
+  error_propagation: 
+    1: http://www.chemtopics.com/aplab/errors.pdf
+    2: http://lectureonline.cl.msu.edu/~mmp/labs/error/e2.htm
+    3: http://www.utm.edu/staff/cerkal/Lect4.html
