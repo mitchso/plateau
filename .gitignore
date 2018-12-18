@@ -1,3 +1,6 @@
 # Files to ignore
 __pychache__
 .idea
+dist/
+build/
+*.spec

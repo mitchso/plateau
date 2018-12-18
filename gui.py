@@ -119,3 +119,5 @@ while True:  # Event Loop
                 sg.PopupOK('Something went wrong. Please check the files provided and try again.')
 
 window.Close()
+
+input()
