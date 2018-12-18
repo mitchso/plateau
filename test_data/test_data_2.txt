@@ -1,0 +1,86 @@
+##BLOCKS= 4          																										
+Plate:	Test_data_2	1.3	PlateFormat	Endpoint	Absorbance	Raw	FALSE	1						2	475 660	1	12	96	1	8	None					
+	Temperature(°C)	1	2	3	4	5	6	7	8	9	10	11	12		1	2	3	4	5	6	7	8	9	10	11	12
+	21.6	0.131310733	0.092219675	0.957985845	0.281430382	0.312090541	0.285275133	0.666534955	0.422913207	0.206901416	0.938663216	0.111572982	0.12958628		0.802547675	0.095388534	0.79179953	0.521279791	0.217860671	0.039861005	0.30200257	0.354136993	0.745040807	0.819561319	0.699453994	0.572609185
+		0.036245471	0.375520171	0.531542355	0.406371735	0.999826928	0.569679312	0.580359579	0.414735554	0.808571834	0.956770366	0.363849049	0.448195076		0.294198662	0.273170554	0.590795523	0.393911309	0.781792663	0.851668287	0.854091319	0.063908531	0.310961201	0.529184455	0.562519203	0.121051934
+		0.210870088	0.519455924	0.3582308	0.656510577	0.152985022	0.34013289	0.576523239	0.537610435	0.277079199	0.456968735	0.337033977	0.442973769		0.392876092	0.796753161	0.19641704	0.016163793	0.485021712	0.530080009	0.369494657	0.550343897	0.403759083	0.190214968	0.185697471	0.825561052
+		0.392589179	0.801365323	0.275597758	0.405533629	0.509315462	0.098727966	0.948418387	0.239057137	0.265761566	0.885114992	0.63287528	0.707857391		0.909566159	0.743070583	0.205832927	0.384930726	0.34164542	0.142386384	0.964610005	0.997758144	0.045092214	0.068409682	0.259844295	0.694848145
+		0.217937006	0.536987503	0.291671696	0.508701094	0.522532261	0.80988046	0.334344751	0.229629542	0.148394923	0.928056735	0.340675991	0.632312154		0.052978629	0.393595704	0.906390959	0.667326939	0.135691312	0.687380582	0.142662536	0.159983819	0.292339056	0.503973928	0.158227953	0.630027412
+		0.273144038	0.407924062	0.454690526	0.078334216	0.219147025	0.523164687	0.642445394	0.052781038	0.780485551	0.790613879	0.830713994	0.901677677		0.536999622	0.259452172	0.064024227	0.685769784	0.181010637	0.970676869	0.9853287	0.101197083	0.047979132	0.956822557	0.69071192	0.339400779
+		0.48327162	0.505223128	0.098878019	0.075827268	0.51230652	0.583869384	0.95691317	0.241022788	0.526778346	0.768641484	0.316890515	0.933571654		0.252948459	0.471618431	0.112456309	0.346552318	0.350151421	0.733536543	0.445469878	0.990097643	0.776071544	0.120606341	0.945269964	0.953727728
+		0.496963369	0.606662434	0.981146343	0.886667533	0.456413387	0.726658199	0.565980875	0.24988809	0.474195828	0.507817168	0.821439488	0.710376609		0.013310041	0.177037469	0.870552833	0.60936361	0.135222862	0.107101504	0.605832831	0.455067224	0.952659009	0.96179496	0.506978193	0.669521245
+																										
+~End																										
+Group:	Standards	1																								
+Sample	Concentration	Wells	BackConcCalc	WellValues	MeanValue	StDev	CV%																			
+																										
+Smallest standard value:  																										
+																										
+Largest standard value:  																										
+																										
+~End																										
+Group:	Controls	1																								
+Sample	Wells	Sample#	WellValues	Concentration	MeanValue	BackConcCalc	% Recovery																			
+Co01	B10	1	1.033094059	 	0.961754474	NoFit	NoFit																			
+	C10		0.919903295			NoFit	NoFit																			
+	D10		0.932266069			NoFit	NoFit																			
+Co02	E10	2	0.059845216	 	0.053396454	NoFit	NoFit																			
+	F10		0.057171553			NoFit	NoFit																			
+	G10		0.043172593			NoFit	NoFit																			
+																										
+~End																										
+Group:	Unknowns	1																								
+Sample	Wells	WellValues	Outliers	Result	MeanResult	StDev	CV%																			
+Un01	B2	0.103032415	Outlier	NoFit	NoFit	NoFit	NoFit																			
+	C2	0.099059797	Outlier	NoFit																						
+Un02	B3	0.684256291	Outlier	NoFit	NoFit	NoFit	NoFit																			
+	C3	0.706628183	Outlier	NoFit																						
+Un03	B4	0.883768604	Outlier	NoFit	NoFit	NoFit	NoFit																			
+	C4	0.956656789	Outlier	NoFit																						
+Un04	B5	0.99715162	Outlier	NoFit	NoFit	NoFit	NoFit																			
+	C5	1.0674576	Outlier	NoFit																						
+Un05	D2	0.087108425	Outlier	NoFit	NoFit	NoFit	NoFit																			
+	E2	0.081103681	Outlier	NoFit																						
+Un06	D3	0.663382631	Outlier	NoFit	NoFit	NoFit	NoFit																			
+	E3	0.61831285	Outlier	NoFit																						
+Un07	D4	0.801236642	Outlier	NoFit	NoFit	NoFit	NoFit																			
+	E4	0.822777689	Outlier	NoFit																						
+Un08	D5	0.908895146	Outlier	NoFit	NoFit	NoFit	NoFit																			
+	E5	1.012025159	Outlier	NoFit																						
+Un09	F2	0.091753526	Outlier	NoFit	NoFit	NoFit	NoFit																			
+	G2	0.088523848	Outlier	NoFit																						
+Un10	F3	0.600534067	Outlier	NoFit	NoFit	NoFit	NoFit																			
+	G3	0.537047042	Outlier	NoFit																						
+Un11	F4	0.708285385	Outlier	NoFit	NoFit	NoFit	NoFit																			
+	G4	0.774196322	Outlier	NoFit																						
+Un12	F5	0.923437994	Outlier	NoFit	NoFit	NoFit	NoFit																			
+	G5	1.067977181	Outlier	NoFit																						
+Un13	B6	0.098034727	Outlier	NoFit	NoFit	NoFit	NoFit																			
+	C6	0.088021543	Outlier	NoFit																						
+Un14	B7	0.674831785	Outlier	NoFit	NoFit	NoFit	NoFit																			
+	C7	0.705192033	Outlier	NoFit																						
+Un15	B8	0.857639046	Outlier	NoFit	NoFit	NoFit	NoFit																			
+	C8	0.847439022	Outlier	NoFit																						
+Un16	B9	0.917823315	Outlier	NoFit	NoFit	NoFit	NoFit																			
+	C9	1.056240498	Outlier	NoFit																						
+Un17	D6	1	Outlier	NoFit	NoFit	NoFit	NoFit																			
+Un18	E6	0.666	Outlier	NoFit	NoFit	NoFit	NoFit																			
+Un19	F6	0.333	Outlier	NoFit	NoFit	NoFit	NoFit																			
+Un20	G6	0	Outlier	NoFit	NoFit	NoFit	NoFit																			
+Un21	D7	0.06550947	Outlier	NoFit	NoFit	NoFit	NoFit																			
+	D8	0.064109789	Outlier	NoFit																						
+Un22	E7	0.518971106	Outlier	NoFit	NoFit	NoFit	NoFit																			
+	E8	0.487128848	Outlier	NoFit																						
+Un23	F7	0.652634597	Outlier	NoFit	NoFit	NoFit	NoFit																			
+	F8	0.578543448	Outlier	NoFit																						
+Un24	G7	0.906888581	Outlier	NoFit	NoFit	NoFit	NoFit																			
+	G8	1.06764968	Outlier	NoFit																						
+Un25	D9	0.06899502	Outlier	NoFit	NoFit	NoFit	NoFit																			
+Un26	E9	0.474278018	Outlier	NoFit	NoFit	NoFit	NoFit																			
+Un27	F9	0.607584063	Outlier	NoFit	NoFit	NoFit	NoFit																			
+Un28	G9	1.068813699	Outlier	NoFit	NoFit	NoFit	NoFit																			
+																										
+Outlier - Outside standard range  																										
+																										
+~End																										
+Original Filename: Data 10-15-18-153332.pda   Date Last Saved: 10/15/2018																										
