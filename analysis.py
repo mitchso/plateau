@@ -1,206 +1,193 @@
-import os
-import re
+# Data structure
+from analysis_objects import *
+
+# Data processing
 import string
+import time
 import pandas
-import yaml
-from sys import argv
+
+# Plotting
 import matplotlib; matplotlib.use("TkAgg")  # Need this statement to be compatible with Tkinter
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
-from scipy.stats import variation, tstd
 
 
-class Sample(object):
-    def __init__(self):
-        self.name = "not assigned"
-        self.wells = []
-        self.values = []
-        self.treatment = "not assigned"
-        self.concentration = 0.0
+def define_experiment(layout_file: str):
+    """
+    Creates an Experiment object with information from the layout file.
+    """
 
-    def average_od(self):
-        return sum(self.values) / len(self.values)
-
-    def cv(self):
-        if len(self.values) > 1:
-            #return variation(self.values)*100
-            return tstd(self.values) * 100
-        else:
-            return 0
-
-    def viability(self, no_tmt_od: float):
-        return self.average_od() * 100 / no_tmt_od
-
-
-class Condition(object):
-    def __init__(self):
-        self.name = "not assigned"
-        self.samples = []
-
-    def is_control(self):
-        if re.search('cells only', self.name):
-            return True
-        return False
-
-    def max_concentration(self):
-        return max([x.concentration for x in self.samples])
-
-    def min_concentration(self):
-        return min([x.concentration for x in self.samples])
-
-    def sort_samples(self):
-        return sorted(self.samples, key=lambda x: x.concentration)
-
-    def colour(self):
-        current_path = os.path.dirname(os.path.realpath(__file__))
-        with open(current_path + "/styles.yml", 'r') as infile:
-            style_dict = yaml.load(infile)
-
-        try:
-            return style_dict['colours'][self.name.lower()]
-        except KeyError:
-            return None
-
-    def style_parameters(self):
-        return {
-            'linestyle': 'dashed' if 'pep' not in self.name.lower() else 'solid',
-            'label': self.name.upper(),
-            'capsize': 5,
-            'marker': '.',
-            'color': self.colour(),
-            'linewidth': 2
-        }
-
-
-class Experiment(object):
-    def __init__(self):
-        self.name = "not assigned"
-        self.cell_line = ""
-        self.passage_number = ""
-        self.media = ""
-        self.incubation_time = ""
-        self.conditions = []
-        self.controls = []
-        self.sample_dict = {}
-
-    def max_concentration(self):
-        return max([x.max_concentration() for x in self.conditions])
-
-    def min_concentration(self):
-        return min([x.max_concentration() for x in self.conditions])
-
-    def sort_conditions(self):
-        return sorted(self.conditions, key=lambda x: x.name)
-
-    def get_controls(self):
-        return [condition for condition in self.conditions if condition.is_control()]
-
-    def no_treatment_od(self):
-        # samples[0] because there is only one sample in a control condition
-        return max(condition.samples[0].average_od() for condition in self.get_controls())
-
-    def lysis_od(self):
-        return min(condition.samples[0].average_od() for condition in self.get_controls())
-
-    def lysis_viability(self):
-        return min(condition.samples[0].viability(self.no_treatment_od()) for condition in self.get_controls())
-
-    def extra_line_style(self):
-        return {'xmin': self.min_concentration(),
-                'xmax': self.max_concentration(),
-                'linestyle': 'dashed',
-                'linewidth': 0.5}
-
-
-def main(data_file, layout_file, results_file, gui_value_dict):
     experiment = Experiment()
 
-    # Collect metadata
-    with open(layout_file, 'r') as fname:
-        metadata = [line.split(sep='\t')[1] for line in fname.readlines()[1:6]]
-        experiment.cell_line = metadata[0]
-        experiment.passage_number = metadata[1]
-        experiment.media = metadata[2]
-        experiment.incubation_time = metadata[3]
+    if layout_file is None:
+        pass
 
-    # Read info from info_file into memory
-    info_table = pandas.read_csv(layout_file, sep='\t', skiprows=6)
-    treatment_table = info_table.loc[info_table.ne(0).all(axis=1)]
-    control_table = info_table.loc[info_table['Treatment'].isin(['cells only (lysis)', 'cells only'])]
-    final_table = pandas.concat([treatment_table, control_table])
-    final_table['Well'] = final_table['Row']+final_table['Column'].map(str)
+    else:
+        with open(layout_file, 'r') as fname:
+            metadata = [line.split(sep='\t')[1] for line in fname.readlines()[1:6]]
+            experiment.cell_line = metadata[0]
+            experiment.passage_number = metadata[1]
+            experiment.media = metadata[2]
+            experiment.incubation_time = metadata[3]
 
-    treatments = list(set([row[1]['Treatment'] for row in final_table.iterrows()]))
-    concentrations = list(set([row[1]['Concentration'] for row in final_table.iterrows()]))
+    return experiment
 
-    # Collect sample information
-    for treatment in treatments:
-        for concentration in concentrations:
-            sample = Sample()
-            for index, row in final_table.iterrows():
-                if (gui_value_dict[row['Well']] is True
-                        and row['Treatment'] == treatment
-                        and row['Concentration'] == concentration):
-                    sample.treatment = treatment
-                    sample.concentration = concentration
-                    sample.name = treatment+", "+str(concentration)+" nM"
-                    sample.wells.append(row['Well'])
-                    experiment.sample_dict[sample.name] = sample
 
-    # Fix weird encoding from old plate reader
+def define_plate(experiment: Experiment, plate_num: int, data_file: str):
+
+    plate = Plate(experiment=experiment)
+    plate.number = plate_num
+    plate.sample_dict = plate_reading_to_dict(plate=read_plate(data_file=data_file))
+
+    return plate
+
+
+def read_layout(layout_file: str) -> pandas.DataFrame:  # TODO: bugged when used with GUI
+    """
+    Reads the layout file and returns a pandas dataframe with all conditions and controls
+    """
+
+    df = pandas.read_csv(layout_file, sep='\t', skiprows=6)  # Read info from info_file into memory
+    df = df.loc[df['Treatment'] != '0']  # Filters out 0's
+    df = df.loc[-df['Treatment'].str.contains('[a-z][0-9]{1,2}', regex=True, case=False)]  # Filters out leftover well values from the template
+    df['Well'] = df['Row'] + df['Column'].map(str)  # Add an extra column called 'Well'
+
+    treatment_table = df.loc[-df['Treatment'].str.contains('cells|lysis', regex=True, case=False)]
+
+    control_table = df.loc[df['Treatment'].isin(['cells only (lysis)', 'cells only', 'cells', 'lysis'])]  # Collect controls
+    control_table = control_table.drop(columns='Concentration')
+    control_table['Concentration'] = 0
+
+    df = pandas.concat([treatment_table, control_table])  # Concat the two tables
+
+    return df
+
+
+def read_plate(data_file: str) -> list:
+    """Reads the .txt data file, removes all junk characters and returns each line in a list."""
+
     fixed_file = []
     with open(data_file, 'rb') as data_file:
         for line in data_file.readlines():
-            fixed_1 = ''.join(filter(lambda x: x in string.printable, str(line)))   # remove non-ascii characters
-            fixed_2 = fixed_1.replace('b\'', '')    # remove from start of each line
+            fixed_1 = ''.join(filter(lambda x: x in string.printable, str(line)))  # remove non-ascii characters
+            fixed_2 = fixed_1.replace('b\'', '')  # remove from start of each line
             fixed_3 = fixed_2.replace('\\t', '\t')  # remove non-ascii tabs
             fixed_4 = fixed_3.replace('\\r\\n\'', '\n')  # remove from end of each line
-            fixed_file.append(fixed_4)  # this should be actually fixed
+            if len(fixed_4.strip()) > 0:
+                fixed_file.append(fixed_4)  # this should be actually fixed
 
-    # Collect info from input file
-    for key in experiment.sample_dict:
-        for well in experiment.sample_dict[key].wells:
-            for line in fixed_file:
-                if re.search(well, line):
-                    if line.split(sep='\t')[3] == 'Outlier':
-                        od_value = line.split(sep='\t')[2]
-                    else:
-                        od_value = line.split(sep='\t')[3]
-                    experiment.sample_dict[key].values.append(float(od_value))
+    return fixed_file
 
-    # Group values into experiment.conditions
-    for treatment in treatments:
-        condition = Condition()
-        condition.name = treatment
-        condition.samples = [sample for sample in experiment.sample_dict.values() if sample.treatment is treatment]
-        experiment.conditions.append(condition)
 
-    # Write output table
-    open(results_file, 'w').close()
-    with open(results_file, 'w') as results_file:
-        results_file.write("\t".join(["Treatment", "Concentration (nM)", "Wells", "Raw Values", "Mean OD", "Viability", "CV %", "\n"]))
-        for condition in experiment.sort_conditions():
-            for sample in condition.sort_samples():
-                results_file.write("\t".join(str(x) for x in ([sample.treatment,
-                                                               sample.concentration,
-                                                           ", ".join(str(x) for x in sample.wells),
-                                                           ", ".join(str(x) for x in sample.values),
-                                                               round(sample.average_od(), 3),
-                                                               round(sample.viability(experiment.no_treatment_od()), 3),
-                                                               round(sample.cv(), 3),
-                                                               "\n"])))
+def plate_reading_to_dict(plate: list) -> dict:
+    """ Reads data from the plate and converts each well reading to a {well: value} dictionary entry."""
+
+    mydict = {}
+    for line in plate:
+        try:
+            first_column = line.split(sep='\t')[1]
+            third_column = line.split(sep='\t')[3]
+            if re.match('[A-Z][0-9]{1,2}', first_column):
+                well = first_column
+                if third_column == 'Outlier':
+                    value = line.split(sep='\t')[2]
+                elif third_column != 'Outlier':
+                    value = line.split(sep='\t')[3]
+                mydict[well] = float(value)
+
+        except IndexError:
+            pass  # Need this try statement to avoid IndexError on lines with no content
+
+    return mydict
+
+
+def write_output(outfile: str, experiment: Experiment) -> None:
+    """ Writes a tab-separated file with the results from the experiment."""
+
+    with open(outfile, 'w') as outfile:
+
+        outfile.write("Experiment:\t%s\n" % experiment)
+        outfile.write("No. of plates:\t%s\n" % len(experiment.plates))
+        outfile.write("Conditions:\t"+"\t\n\t".join([x.name for x in experiment.all_conditions()])+"\n")
+        outfile.write("Date analyzed (y-m-d):\t%s\n\n" % time.strftime('%Y-%m-%d'))
+
+        outfile.write("Analyzed data (Controls):\n")
+        outfile.write("\t\tCells only\t\t\tLysis\n")
+        outfile.write("\t\t" + "Mean OD\tViability\tStDev (propagated)\t"*2 + "\n")
+        for plate in experiment.plates.values():
+            outfile.write("\t".join(["\tPlate " + str(plate.number),
+                                     str(plate.cells_only_od()),
+                                     "100",
+                                     str(plate.get_cells_only().samples[0].sd_propagated()),
+                                     str(plate.lysis_od()),
+                                     str(plate.lysis_viability()),
+                                     str(plate.get_lysis_control().samples[0].sd_propagated())]) + "\n")
+        if len(experiment.plates) > 1:
+            outfile.write("\t".join(["\tMerge",
+                                     str(experiment.no_treatment_od_avg()),
+                                     "100",
+                                     str(experiment.no_treatment_od_sd()*100),
+                                     str(experiment.lysis_od_avg()),
+                                     str(experiment.lysis_viability()),
+                                     str(experiment.lysis_sd_propagated())]) + "\n")
+
+        outfile.write("\n")
+        outfile.write("Analyzed data (Conditions):")
+
+        for plate in experiment.plates.values():
+            outfile.write("\n")
+            conditions = plate.all_conditions()
+            outfile.write("Plate " + str(plate.number) + "\t" + "\t\t".join(x.name for x in conditions) + "\n")
+            outfile.write("Concentration\t" + 'Viability\tStDev\t' * len(conditions) + "\n")
+
+            for concentration in sorted(plate.concentrations, reverse=True):
+                to_print = [str(concentration)]
+                for condition in conditions:
+                    viability = condition.samples[concentration].viability()
+                    stdev = condition.samples[concentration].sd_propagated()
+                    to_print.extend([str(viability), str(stdev)])
+                outfile.write("\t".join(to_print) + "\n")
+
+        outfile.write("\n")
+        outfile.write("Raw data:\n")
+        outfile.write("\t".join(["Plate #", "Condition", "Concentration", "Wells", "OD values", "Excluded wells",
+                                 "Excluded OD values", "Mean OD", "Viability", "StDev (sample)", "StDev (propagated)"]) + "\n")
+
+        for plate in experiment.plates.values():
+            for condition in plate.sort_conditions().values():
+                for sample in condition.sort_samples().values():
+                    to_print = [plate.number,
+                                condition.name,
+                                sample.concentration,
+                                list(sample.wells.keys())[0],
+                                list(sample.wells.values())[0],
+                                ", ".join(list(sample.excluded_wells.keys())),
+                                ", ".join(map(str, list(sample.excluded_wells.values()))),
+                                sample.average_od(),
+                                sample.viability(),
+                                sample.sd_sample(),
+                                sample.sd_propagated()]
+
+                    if len(sample.wells) > 1:
+                        for index, key in enumerate(sample.wells):
+                            if index is 0:
+                                pass
+                            else:
+                                to_print.append("\n" + "\t"*3 + "\t".join([key, str(sample.wells[key])]))
+
+                    outfile.write("\t".join(map(str, to_print)) + "\n")
+
+
+def plot_graph(experiment: Experiment):
+    """ Plots all of the data from the experiment."""
 
     plt.clf()
-    # Add data to graph
-    y_offset = 1.0
     for condition in experiment.sort_conditions():
-        if not condition.is_control():
-            # x = [math.log(sample.concentration*y_offset, 10) for sample in condition.sort_samples()]
-            x = [sample.concentration * y_offset for sample in condition.sort_samples()]
-            y = [sample.viability(experiment.no_treatment_od()) for sample in condition.sort_samples()]
-            errors = [sample.cv() for sample in condition.sort_samples()]
+        if not condition.is_cells_only() and not condition.is_lysis_control():
+            x = [float(sample.concentration) for sample in condition.sort_samples().values()]
+            y = [sample.viability() for sample in condition.sort_samples().values()]
+            errors = [sample.sd_propagated() for sample in condition.sort_samples().values()]
             plt.errorbar(x, y, yerr=errors, **condition.style_parameters())
-            #y_offset += 0.01
 
     # Stylize the graph
     plt.xscale('log')
@@ -208,31 +195,92 @@ def main(data_file, layout_file, results_file, gui_value_dict):
     handles, labels = ax.get_legend_handles_labels()  # Get legend handles and labels
     handles = [h[0] for h in handles]  # Remove error bars from legend handles
     ax.xaxis.set_major_formatter(ScalarFormatter())  # Need this to make the axis numbers display in plain
-    ax.yaxis.set_major_formatter(ScalarFormatter())         # rather than scientific notation
+    ax.yaxis.set_major_formatter(ScalarFormatter())  # rather than scientific notation
     [ax.spines[spine].set_visible(False) for spine in ax.spines  # Remove borders around the top and right side
      if ax.spines[spine].spine_type is 'right'
      or ax.spines[spine].spine_type is 'top']
     ax.tick_params(which='minor', length=4)
 
+    # Extra lines to add
     plt.hlines(100, **experiment.extra_line_style())  # 100% viability line
     plt.hlines(experiment.lysis_viability(), color='red', **experiment.extra_line_style())  # lysis line
-    plt.text(0, experiment.lysis_viability(), 'blah')  # TODO: fix this to show text that reads lysis
-    # plt.subplots_adjust(left=0.25)  # TODO: use this to move the plot so that text can fit beside it
     plt.hlines(0, **experiment.extra_line_style())  # 0 line if the origin is not set at 0
 
-    plt.title(" ".join([experiment.cell_line,
-                        "P"+experiment.passage_number,
-                        experiment.incubation_time,
-                        "incubation in",
-                        experiment.media]))
-
+    plt.title(str(experiment))
     plt.legend(handles, labels, markerscale=0, frameon=False)  # Add legend
 
-    # Finally, display the graph
     return plt
 
+
+def main(data_files: list, layout_files: list, results_file: str, plate_dicts: list):
+
+    experiment = define_experiment(layout_files[0])
+
+    # --------- Define plate(s) --------- #
+    for i, layout_file in enumerate(layout_files):
+        experiment.plates[i] = define_plate(experiment=experiment, plate_num=i+1, data_file=data_files[i])
+
+        df = read_layout(layout_file)
+        conditions = list(set([row[1]['Treatment'] for row in df.iterrows()]))
+        concentrations = list(set([row[1]['Concentration'] for row in df.iterrows()]))
+
+        experiment.concentrations = concentrations[:]
+        experiment.plates[i].concentrations = concentrations[:]
+
+        try:
+            experiment.concentrations.remove(0.0)  # Cleans out any 0's in the concentration list
+            experiment.plates[i].concentrations.remove(0.0)  # Cleans out any 0's in the concentration list
+        except ValueError:
+            pass
+
+        # --------- Define conditions ---------#
+        for condition in conditions:
+            experiment.plates[i].conditions[condition] = Condition(plate=experiment.plates[i])
+            experiment.plates[i].conditions[condition].name = condition
+
+            # --------- Define samples ---------#
+            for concentration in experiment.plates[i].concentrations + [0]:  # Add 0 to pick up controls as well
+                experiment.plates[i].conditions[condition].samples[concentration] = Sample(condition=experiment.plates[i].conditions[condition])
+
+                for index, row in df.iterrows():
+                    if row['Treatment'] == condition and row['Concentration'] == concentration:
+                        value = experiment.plates[i].sample_dict[row['Well']]
+                        experiment.plates[i].conditions[condition].samples[concentration].concentration = concentration
+                        if plate_dicts[i][row['Well']] is True:
+                            experiment.plates[i].conditions[condition].samples[concentration].wells[row['Well']] = value
+                        if plate_dicts[i][row['Well']] is False:
+                            experiment.plates[i].conditions[condition].samples[concentration].excluded_wells[row['Well']] = value
+
+    # --------- Clean up the data ---------#
+    for plate in experiment.plates.values():
+        for condition in plate.conditions.values():
+            condition.remove_empty_samples()
+
+    write_output(outfile=results_file, experiment=experiment)  # Write data to file
+
+    return plot_graph(experiment=experiment)
+
+
 if __name__ == '__main__':
-    main(data_file=argv[1],
-         layout_file=argv[2],
-         results_file=argv[3],
-         gui_value_dict='remove_this_')
+
+    mydict = {'data_file_1': '', 'layout_file_1': '', 'data_file_2': '', 'layout_file_2': '', 'results_file': '',
+              'A1': True, 'A2': True, 'A3': True, 'A4': True, 'A5': True, 'A6': True, 'A7': True, 'A8': True,
+              'A9': True, 'A10': True, 'A11': True, 'A12': True, 'B1': True, 'B2': True, 'B3': True, 'B4': True,
+              'B5': False, 'B6': True, 'B7': True, 'B8': True, 'B9': True, 'B10': True, 'B11': True, 'B12': True,
+              'C1': True, 'C2': True, 'C3': True, 'C4': True, 'C5': True, 'C6': True, 'C7': True, 'C8': True,
+              'C9': True, 'C10': True, 'C11': True, 'C12': True, 'D1': True, 'D2': True, 'D3': True, 'D4': True,
+              'D5': True, 'D6': True, 'D7': True, 'D8': True, 'D9': True, 'D10': True, 'D11': True, 'D12': True,
+              'E1': True, 'E2': True, 'E3': True, 'E4': True, 'E5': True, 'E6': True, 'E7': True, 'E8': True,
+              'E9': True, 'E10': True, 'E11': True, 'E12': True, 'F1': True, 'F2': True, 'F3': True, 'F4': True,
+              'F5': True, 'F6': True, 'F7': True, 'F8': True, 'F9': True, 'F10': True, 'F11': True, 'F12': True,
+              'G1': True, 'G2': True, 'G3': True, 'G4': True, 'G5': True, 'G6': True, 'G7': True, 'G8': True,
+              'G9': True, 'G10': True, 'G11': True, 'G12': True, 'H1': True, 'H2': True, 'H3': True, 'H4': True,
+              'H5': True, 'H6': True, 'H7': True, 'H8': True, 'H9': True, 'H10': True, 'H11': True, 'H12': True,
+              0: 'Analysis'}
+
+    main(data_files=["/Users/mitchsyberg-olsen/Desktop/test_data_1.txt",
+                     "/Users/mitchsyberg-olsen/Desktop/test_data_2.txt"],
+         layout_files=["/Users/mitchsyberg-olsen/Desktop/test_layout_1.1.txt",
+                       "/Users/mitchsyberg-olsen/Desktop/test_layout_2.txt"],
+         results_file="/Users/mitchsyberg-olsen/Desktop/cl_results.txt",
+         plate_dicts=[mydict, mydict]).show()
