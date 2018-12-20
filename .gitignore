@@ -4,3 +4,4 @@ __pychache__
 dist/
 build/
 *.spec
+test.py

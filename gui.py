@@ -2,6 +2,18 @@ import PySimpleGUI as sg
 import string
 import analysis
 import os
+import sys
+
+
+def is_bundled():
+    """
+    Tests whether this script is running live or in a PyInstaller bundle (application).
+    Based on code from: https://pyinstaller.readthedocs.io/en/v3.3.1/runtime-information.html
+    """
+    if getattr(sys, 'frozen', False):
+        return True
+    else:
+        return False
 
 
 def make_button_grid(plate_number: int, translation_dict: dict):
@@ -31,8 +43,17 @@ def build_translation_dict():
         tdict[number] = letter.upper()
     return tdict
 
+
+def get_file_location(filename: str):
+    if is_bundled():  # refer to https://pyinstaller.readthedocs.io/en/v3.3.1/runtime-information.html
+        return sys._MEIPASS + "/" + filename + "/" + filename
+    else:
+        return os.path.dirname(os.path.abspath(__file__)) + "/" + filename
+
+
 # os.path.dirname(os.path.abspath(__file__))+"/plateau.png" # TODO: debug this
-header = [[sg.Image("/Users/mitchsyberg-olsen/github/plateau/plateau.png")],
+# /Users/mitchsyberg-olsen/github/plateau/plateau.png
+header = [[sg.Image(get_file_location("plateau.png"))],
           [sg.Text('Welcome to Plateau! This application is used to analyze results from 96-well plate assays.',
                    font=('Any', 15))],
           [sg.Text('Please input your data, plate layout and destination to write the results, then press \"Analyze\".',

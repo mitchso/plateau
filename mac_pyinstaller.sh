@@ -18,4 +18,6 @@ pyinstaller --name plateau \
             --windowed \
             --add-binary /Library/Frameworks/Python.framework/Versions/3.7/lib/libtk8.6.dylib:tk \
             --add-binary /Library/Frameworks/Python.framework/Versions/3.7/lib/libtcl8.6.dylib:tcl \
+            --add-data /Users/mitchsyberg-olsen/github/plateau/plateau.png:plateau.png \
             $gui_path
+

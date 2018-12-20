@@ -259,28 +259,3 @@ def main(data_files: list, layout_files: list, results_file: str, plate_dicts: l
     write_output(outfile=results_file, experiment=experiment)  # Write data to file
 
     return plot_graph(experiment=experiment)
-
-
-if __name__ == '__main__':
-
-    mydict = {'data_file_1': '', 'layout_file_1': '', 'data_file_2': '', 'layout_file_2': '', 'results_file': '',
-              'A1': True, 'A2': True, 'A3': True, 'A4': True, 'A5': True, 'A6': True, 'A7': True, 'A8': True,
-              'A9': True, 'A10': True, 'A11': True, 'A12': True, 'B1': True, 'B2': True, 'B3': True, 'B4': True,
-              'B5': False, 'B6': True, 'B7': True, 'B8': True, 'B9': True, 'B10': True, 'B11': True, 'B12': True,
-              'C1': True, 'C2': True, 'C3': True, 'C4': True, 'C5': True, 'C6': True, 'C7': True, 'C8': True,
-              'C9': True, 'C10': True, 'C11': True, 'C12': True, 'D1': True, 'D2': True, 'D3': True, 'D4': True,
-              'D5': True, 'D6': True, 'D7': True, 'D8': True, 'D9': True, 'D10': True, 'D11': True, 'D12': True,
-              'E1': True, 'E2': True, 'E3': True, 'E4': True, 'E5': True, 'E6': True, 'E7': True, 'E8': True,
-              'E9': True, 'E10': True, 'E11': True, 'E12': True, 'F1': True, 'F2': True, 'F3': True, 'F4': True,
-              'F5': True, 'F6': True, 'F7': True, 'F8': True, 'F9': True, 'F10': True, 'F11': True, 'F12': True,
-              'G1': True, 'G2': True, 'G3': True, 'G4': True, 'G5': True, 'G6': True, 'G7': True, 'G8': True,
-              'G9': True, 'G10': True, 'G11': True, 'G12': True, 'H1': True, 'H2': True, 'H3': True, 'H4': True,
-              'H5': True, 'H6': True, 'H7': True, 'H8': True, 'H9': True, 'H10': True, 'H11': True, 'H12': True,
-              0: 'Analysis'}
-
-    main(data_files=["/Users/mitchsyberg-olsen/Desktop/test_data_1.txt",
-                     "/Users/mitchsyberg-olsen/Desktop/test_data_2.txt"],
-         layout_files=["/Users/mitchsyberg-olsen/Desktop/test_layout_1.1.txt",
-                       "/Users/mitchsyberg-olsen/Desktop/test_layout_2.txt"],
-         results_file="/Users/mitchsyberg-olsen/Desktop/cl_results.txt",
-         plate_dicts=[mydict, mydict]).show()
