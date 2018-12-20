@@ -31,8 +31,8 @@ def build_translation_dict():
         tdict[number] = letter.upper()
     return tdict
 
-
-header = [[sg.Image("/Users/mitchsyberg-olsen/github/plateau/icon.png")],
+# os.path.dirname(os.path.abspath(__file__))+"/plateau.png" # TODO: debug this
+header = [[sg.Image("/Users/mitchsyberg-olsen/github/plateau/plateau.png")],
           [sg.Text('Welcome to Plateau! This application is used to analyze results from 96-well plate assays.',
                    font=('Any', 15))],
           [sg.Text('Please input your data, plate layout and destination to write the results, then press \"Analyze\".',
@@ -115,9 +115,10 @@ while True:  # Event Loop
                                        plate_dicts=[plate_1_dict, plate_2_dict])
                 figure.show(block=False)
 
-            except AttributeError:
+            except KeyError:
+                sg.PopupOK('Possible error: Excluded both technical replicates of a sample.')
+
+            except Exception:
                 sg.PopupOK('Something went wrong. Please check the files provided and try again.')
 
 window.Close()
-
-input()

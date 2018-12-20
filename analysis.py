@@ -58,7 +58,7 @@ def read_layout(layout_file: str) -> pandas.DataFrame:  # TODO: bugged when used
     control_table = control_table.drop(columns='Concentration')
     control_table['Concentration'] = 0
 
-    df = pandas.concat([treatment_table, control_table])  # Concat the two tables
+    df = pandas.concat([treatment_table, control_table], sort=True)  # Concat the two tables
 
     return df
 
@@ -116,20 +116,20 @@ def write_output(outfile: str, experiment: Experiment) -> None:
         outfile.write("\t\t" + "Mean OD\tViability\tStDev (propagated)\t"*2 + "\n")
         for plate in experiment.plates.values():
             outfile.write("\t".join(["\tPlate " + str(plate.number),
-                                     str(plate.cells_only_od()),
+                                     str(round(plate.cells_only_od(), 3)),
                                      "100",
-                                     str(plate.get_cells_only().samples[0].sd_propagated()),
-                                     str(plate.lysis_od()),
-                                     str(plate.lysis_viability()),
-                                     str(plate.get_lysis_control().samples[0].sd_propagated())]) + "\n")
+                                     str(round(plate.get_cells_only().samples[0].sd_propagated(), 3)),
+                                     str(round(plate.lysis_od(), 3)),
+                                     str(round(plate.lysis_viability(), 3)),
+                                     str(round(plate.get_lysis_control().samples[0].sd_propagated(), 3))]) + "\n")
         if len(experiment.plates) > 1:
             outfile.write("\t".join(["\tMerge",
-                                     str(experiment.no_treatment_od_avg()),
+                                     str(round(experiment.no_treatment_od_avg(), 3)),
                                      "100",
-                                     str(experiment.no_treatment_od_sd()*100),
-                                     str(experiment.lysis_od_avg()),
-                                     str(experiment.lysis_viability()),
-                                     str(experiment.lysis_sd_propagated())]) + "\n")
+                                     str(round(experiment.no_treatment_od_sd()*100, 3)),
+                                     str(round(experiment.lysis_od_avg(), 3)),
+                                     str(round(experiment.lysis_viability(), 3)),
+                                     str(round(experiment.lysis_sd_propagated(), 3))]) + "\n")
 
         outfile.write("\n")
         outfile.write("Analyzed data (Conditions):")
@@ -145,7 +145,7 @@ def write_output(outfile: str, experiment: Experiment) -> None:
                 for condition in conditions:
                     viability = condition.samples[concentration].viability()
                     stdev = condition.samples[concentration].sd_propagated()
-                    to_print.extend([str(viability), str(stdev)])
+                    to_print.extend([str(round(viability, 3)), str(round(stdev, 3))])
                 outfile.write("\t".join(to_print) + "\n")
 
         outfile.write("\n")
@@ -163,10 +163,10 @@ def write_output(outfile: str, experiment: Experiment) -> None:
                                 list(sample.wells.values())[0],
                                 ", ".join(list(sample.excluded_wells.keys())),
                                 ", ".join(map(str, list(sample.excluded_wells.values()))),
-                                sample.average_od(),
-                                sample.viability(),
-                                sample.sd_sample(),
-                                sample.sd_propagated()]
+                                round(sample.average_od(), 3),
+                                round(sample.viability(), 3),
+                                round(sample.sd_sample(), 3),
+                                round(sample.sd_propagated(), 3)]
 
                     if len(sample.wells) > 1:
                         for index, key in enumerate(sample.wells):
