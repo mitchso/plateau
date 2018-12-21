@@ -12,7 +12,8 @@ spec_path=`pwd`'/plateau.spec'
 ico_path=`pwd`'/plateau.icns'
 
 # note: use spec_path if repeating the command.
-pyinstaller --name plateau \
+pyinstaller --clean \
+            --name plateau \
             --icon $ico_path \
             --onefile \
             --windowed \
@@ -21,3 +22,10 @@ pyinstaller --name plateau \
             --add-data /Users/mitchsyberg-olsen/github/plateau/plateau.png:plateau.png \
             $gui_path
 
+#           --add-binary /Library/Frameworks/Python.framework/Versions/3.7/lib/tcl8.6/init.tcl:init.tcl \
+#            --onefile \
+#            --windowed \
+
+#            --add-binary /Library/Frameworks/Python.framework/Versions/3.7/lib/libtk8.6.dylib:tk \
+#            --add-binary /Library/Frameworks/Python.framework/Versions/3.7/lib/libtcl8.6.dylib:tcl \
+#              --hidden-import _tkinter \
