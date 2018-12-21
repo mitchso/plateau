@@ -49,7 +49,7 @@ def read_layout(layout_file: str) -> pandas.DataFrame:  # TODO: bugged when used
 
     df = pandas.read_csv(layout_file, sep='\t', skiprows=6)  # Read info from info_file into memory
     df = df.loc[df['Treatment'] != '0']  # Filters out 0's
-    df = df.loc[-df['Treatment'].str.contains('^[a-z][0-9]{1,2}', regex=True, case=False)]  # Filters out leftover well values from the template
+    df = df.loc[-df['Treatment'].str.contains('^[a-z][0-9]{1,2}$', regex=True, case=False)]  # Filters out leftover well values from the template
     df['Well'] = df['Row'] + df['Column'].map(str)  # Add an extra column called 'Well'
 
     treatment_table = df.loc[-df['Treatment'].str.contains('cells|lysis', regex=True, case=False)]
