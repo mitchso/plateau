@@ -1,7 +1,7 @@
 <h6 align="center">source code for:</h6>
-
+<p align="center">
 <img align="center" src="https://github.com/mitchso/plateau/blob/master/images/plateau.png" alt="plateau">
-
+</p>
 <h6 align="center"> open-source, cross-platform, standalone <br> application for microplate data analysis</h6>
 
 ## plateau
