@@ -51,7 +51,9 @@ def get_file_location(filename: str):
         return os.path.dirname(os.path.abspath(__file__)) + "/" + filename
 
 
-header = [[sg.Image(get_file_location("/images/plateau.png"))],
+# os.path.dirname(os.path.abspath(__file__))+"/plateau.png" # TODO: debug this
+# /Users/mitchsyberg-olsen/github/plateau/plateau.png
+header = [[sg.Image(get_file_location("plateau.png"))],
           [sg.Text('Welcome to Plateau! This application is used to analyze results from 96-well plate assays.',
                    font=('Any', 15))],
           [sg.Text('Please input your data, plate layout and destination to write the results, then press \"Analyze\".',

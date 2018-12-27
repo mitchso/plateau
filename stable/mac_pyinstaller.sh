@@ -8,8 +8,8 @@
 #
 
 gui_path=`pwd`'/gui.py'
-spec_path=`pwd`'/images/plateau.spec'
-ico_path=`pwd`'/images/plateau.icns'
+spec_path=`pwd`'/plateau.spec'
+ico_path=`pwd`'/plateau.icns'
 
 # note: use spec_path if repeating the command.
 pyinstaller --clean \
