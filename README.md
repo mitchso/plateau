@@ -1,6 +1,6 @@
 <h6 align="center">source code for:</h6>
 
-![alt text](https://github.com/mitchso/plateau/tree/master/images/plateau.png)
+![alt text](https://github.com/mitchso/plateau/blob/master/images/plateau.png)
 
 <h6 align="center"> open-source, cross-platform, standalone <br> application for microplate data analysis</h6>
 
@@ -26,7 +26,7 @@ That being said, feel free to open an issue or submit a pull request if you are 
 
 Here's the current look of the application as seen on a Mac:
 
-![alt text](https://github.com/mitchso/plateau/tree/master/images/main_tab.png)
+![Main page](https://github.com/mitchso/plateau/blob/master/images/main_tab.png)
 
 ## Installation
 
