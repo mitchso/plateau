@@ -105,7 +105,7 @@ In addition, a tab-delimited results file will be written which includes:
 ### 1 vs 2 plate experiments
 Plateau can handle experiments run on one or two plates. If you are running a single plate experiment, plateau calculates cell viability of any given sample based on the control wells contained on the plate.
 
-![sample_viability](http://mathurl.com/yc75ufbh)
+![sample_viability](http://mathurl.com/yc75ufbh.png)
 
 ### Exclude tab
 WIP
