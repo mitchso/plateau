@@ -3,6 +3,7 @@ import string
 import analysis
 import os
 import sys
+import traceback
 
 
 def is_bundled():
@@ -135,9 +136,15 @@ while True:  # Event Loop
                 figure.show(block=False)
 
             except KeyError:
-                sg.PopupOK('Possible error: Excluded both technical replicates of a sample.')
+                error = traceback.format_exc()
+
+                sg.PopupOK('Possible error: Excluded both technical replicates of a sample.\n'
+                           '\n\nFull error message:\n%s' % error)
 
             except Exception:
-                sg.PopupOK('Something went wrong. Please check the files provided and try again.')
+                error = traceback.format_exc()
+
+                sg.PopupOK('Something went wrong. Please check the files provided and try again.\n'
+                           '\n\nFull error message:\n%s' % error)
 
 window.Close()

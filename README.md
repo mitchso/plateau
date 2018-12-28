@@ -16,6 +16,7 @@
 	- [Exclude tab](#exclude-tab)
 	- [Usage example](#usage-example)
 - [Code overview](#code-overview)
+- [Application packaging](#application-packaging)
 
 ## Introduction
 This is the source code for an application I developed called plateau. It is a pretty straightforward application that is meant to automate the analysis of microplate data from cell-based assays.
@@ -66,21 +67,32 @@ and install the latest release.
 ## Usage
 
 ### Inputs
-Plateau takes 1-2 pairs of data & layout files. All files are assumed to be tab-separated text files.
+Plateau takes 1-2 pairs of data & layout files. 
+<br>
+<b>All files are assumed to be tab-separated text files.</b>
 
 | File type | Source | Contents | 
 | --------- | ------ | -------- | 
 | Data file | SoftMaxPro v5.4.5 | Raw data from plate reader
 | Layout file | layout_template.xltx | Location of samples on plate
 
-Plateau is currently only built to parse data files obtained from exporting raw data from SoftMaxPro v5.4.5
+Plateau is currently only built to parse data files obtained from exporting raw data from SoftMaxPro v5.4.5 on a computer running Windows 7. There is an example of this in the "test_data" folder.
 
 This repo contains an excel template file that I have created to easily generate layout files (layout_template.xltx). Please ensure that the layout file is plain text!
 
 ### Outputs
+Plateau will instantly generate a graph of cell viability vs. treatment concentration for every condition in your experiment. Here is what the graph of test\_data\_1 looks like:
 
+![graph image](https://github.com/mitchso/plateau/blob/master/images/mpl_graph.png)
+
+In addition, a tab-delimited results file will be written which includes:
+
+* Summary of all experimental information (treatment names, cell line, incubation time, media details, date, etc)
+* Analyzed data formatted so that it may be copied directly into GraphPad Prism
+* Complete list of all raw data and calculations
 
 ### 1 vs 2 plate experiments
+Plateau can handle experiments done on a single plate
 
 ### Exclude tab
 WIP
