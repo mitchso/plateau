@@ -41,8 +41,8 @@ class Sample:
         if self.condition.is_cells_only():
             return self.sd_sample() * 100
 
-        elif self.sd_sample() == 0:
-            return 0
+        # elif self.sd_sample() == 0:   # Removed 2018-12-28
+        #     return 0
 
         else:
             sd_control = self.experiment.no_treatment_od_sd()
