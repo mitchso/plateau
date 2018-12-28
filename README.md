@@ -6,6 +6,7 @@
 
 ## plateau
 - [Introduction](#introduction)
+	- [Experimental assumptions](#experimental-assumptions)
 - [Installation](#installation)
 	- [Mac](#mac)
 	- [Windows](#windows)
@@ -28,6 +29,16 @@ That being said, feel free to open an issue or submit a pull request if you are 
 Here's the current look of the application as seen on a Mac:
 
 ![Main page](https://github.com/mitchso/plateau/blob/master/images/main_tab.png)
+
+### Experimental assumptions
+In order for Plateau to run, the following assumptions must be met:
+
+* Every condition must have the same range of concentrations, for example:
+	* You are testing treatments in the range of 100 - 0.1 nM, with dilutions of 100 nM, 10 nM, 1 nM, and 0.1 nM.
+	* In this case, Plateau assumes that every condition in your experiment will follow this same dilution scheme.
+	* If any condition does not follow the same dilution scheme, plateau will raise an error. 
+* Each plate must have at least 1 well with no treatment (named 'cells' or 'cells only')
+* Each plate must have at least 1 well that has been lysed as a positive control (named 'lysis' or 'cells only (lysis)')
 
 ## Installation
 
@@ -92,7 +103,9 @@ In addition, a tab-delimited results file will be written which includes:
 * Complete list of all raw data and calculations
 
 ### 1 vs 2 plate experiments
-Plateau can handle experiments done on a single plate
+Plateau can handle experiments run on one or two plates. If you are running a single plate experiment, plateau calculates cell viability of any given sample based on the control wells contained on the plate.
+
+![sample_viability](http://mathurl.com/yc75ufbh)
 
 ### Exclude tab
 WIP
