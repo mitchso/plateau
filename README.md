@@ -103,15 +103,15 @@ In addition, a tab-delimited results file will be written which includes:
 * Complete list of all raw data and calculations
 
 ### 1 vs 2 plate experiments
-Plateau can handle experiments run on one or two plates. If you are running a single plate experiment, plateau calculates cell viability of any given sample based on the control wells contained on the plate.
+Plateau can handle experiments run on one or two plates. There will be slight differences in how the calculations work depending on the number of plates.
 
-![sample_viability](http://mathurl.com/yc75ufbh.png)
+If you are running a single plate experiment, plateau calculates cell viability of any given sample based on the average OD of the control well(s) contained on the plate:
+
+![sample_viability](http://mathurl.com/ybnm7e4g.png)
+
+If you are running a two plate experiment, the same equation is used except the OD values from both plates are considered together.
 
 ### Exclude tab
-WIP
+The exclude tab can be used to exclude certain wells from the analysis if something has gone wrong. Simply navigate to the tab, uncheck the box for any well you wish to exclude, and press analyze.
 
-### Usage example
-WIP
-
-## Code overview
-WIP
+![graph image](https://github.com/mitchso/plateau/blob/master/images/exclude_tab.png)
