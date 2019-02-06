@@ -16,8 +16,6 @@
 	- [1 vs 2 plate experiments](#1-vs-2-plate-experiments)
 	- [Exclude tab](#exclude-tab)
 	- [Usage example](#usage-example)
-- [Code overview](#code-overview)
-- [Application packaging](#application-packaging)
 
 ## Introduction
 This is the source code for an application I developed called plateau. It is a pretty straightforward application that is meant to automate the analysis of microplate data from cell-based assays.
