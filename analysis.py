@@ -38,7 +38,6 @@ def define_plate(experiment: Experiment, plate_num: int, data_file: str):
     plate = Plate(experiment=experiment)
     plate.number = plate_num
     plate.sample_dict = plate_reading_to_dict(plate=read_plate(data_file=data_file))
-
     return plate
 
 
@@ -68,20 +67,22 @@ def read_plate(data_file: str) -> list:
 
     fixed_file = []
     with open(data_file, 'rb') as data_file:
-        for line in data_file.readlines():
-            fixed_1 = ''.join(filter(lambda x: x in string.printable, str(line)))  # remove non-ascii characters
-            fixed_2 = fixed_1.replace('b\'', '')  # remove from start of each line
-            fixed_3 = fixed_2.replace('\\t', '\t')  # remove non-ascii tabs
-            fixed_4 = fixed_3.replace('\\r\\n\'', '\n')  # remove from end of each line
-            if len(fixed_4.strip()) > 0:
-                fixed_file.append(fixed_4)  # this should be actually fixed
+        lines = data_file.read().splitlines()
+
+        for line in lines:
+            fixed = ''.join(filter(lambda x: x in string.printable, str(line)))  # remove non-ascii characters
+            fixed = fixed.replace('b\'', '')  # remove from start of each line
+            fixed = fixed.replace('\\t', '\t')  # remove non-ascii tabs
+            fixed = fixed.replace('\\r\\n\'', '\n')  # remove from end of each line
+            fixed = fixed.replace('\\r', '\n')  # remove from end of each line
+            if len(fixed.strip()) > 0:
+                fixed_file.append(fixed)  # this should be actually fixed
 
     return fixed_file
 
 
 def plate_reading_to_dict(plate: list) -> dict:
     """ Reads data from the plate and converts each well reading to a {well: value} dictionary entry."""
-
     mydict = {}
     for line in plate:
         try:
@@ -97,7 +98,6 @@ def plate_reading_to_dict(plate: list) -> dict:
 
         except IndexError:
             pass  # Need this try statement to avoid IndexError on lines with no content
-
     return mydict
 
 
@@ -219,7 +219,6 @@ def main(data_files: list, layout_files: list, results_file: str, plate_dicts: l
     # --------- Define plate(s) --------- #
     for i, layout_file in enumerate(layout_files):
         experiment.plates[i] = define_plate(experiment=experiment, plate_num=i+1, data_file=data_files[i])
-
         df = read_layout(layout_file)
         conditions = list(set([row[1]['Treatment'] for row in df.iterrows()]))
         concentrations = list(set([row[1]['Concentration'] for row in df.iterrows()]))

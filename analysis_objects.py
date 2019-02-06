@@ -41,6 +41,9 @@ class Sample:
         if self.condition.is_cells_only():
             return self.sd_sample() * 100
 
+        elif self.average_od() == 0:    # Added 2019-02-06
+            return self.sd_sample()
+
         # elif self.sd_sample() == 0:   # Removed 2018-12-28
         #     return 0
 
